@@ -1,0 +1,37 @@
+# LOJ2261  
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 20000100;
+int k, seed, S, n;
+int p[N], a[N];
+
+int getrand() { seed = ((seed * 12321) ^ 9999) % 32768; return seed; }
+void Data() {
+	scanf("%d%d%d", &k, &seed, &S);
+	int t = 0; n = k * 2 + 1;
+	for(int i = 1; i <= n; i++) p[i] = getrand() >> 7 & 1, t += p[i];
+	int i = 1;
+	for(; t > k;) { for(; p[i] == 0; ++i); p[i] = 0, --t; }
+	for(; t < k;) { for(; p[i] == 1; ++i); p[i] = 1, ++t; }
+//	printf(">>> "); for(int i = 1; i <= n; i++) printf("%d ", p[i]); puts("");
+}
+int solve(int s, int type) {
+	memset(a, 0, sizeof(a)); int now = k + 2, pos = k + 2, cnt = 0;
+	for(int i = 1; i <= n; i++) (p[i] ^ type) ? (++pos, ++a[pos]) : --pos;
+	for(int i = now + 1; i <= n + 2; i++) cnt += a[i];
+	for(int i = 1; i <= n; i++) {
+		(p[i] ^ type) ? (cnt -= a[++now], --a[now]) : cnt += a[now--];
+		if(!p[i] && cnt == s) return i;
+		if(p[i] ^ type) { ++pos, ++a[pos]; if(pos > now) ++cnt; }
+		else --pos;
+	}
+	return -1;
+}
+int main() {
+	Data();
+	printf("%d\n", solve(0, 0)), printf("%d\n", solve(S, 0));
+	printf("%d\n", solve(S, 1));
+	return 0;
+}
+```
